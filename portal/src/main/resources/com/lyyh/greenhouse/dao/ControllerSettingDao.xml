@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyyh.greenhouse.dao.ControllerSettingDao">
+	<resultMap id="Controller" type="com.lyyh.greenhouse.pojo.GHController">
+		<id column="controller_id" property="controllerId" />
+		<result column="house_id" property="houseId" />
+		<result column="house_name" property="houseName" />
+		<result column="controller_ip" property="controllerIp" />
+		<result column="controller_port" property="controllerPort" />
+		<result column="zone_name" property="zoneName" />
+	</resultMap>
+	<select id="queryControllersByZoneName" parameterType="String" resultMap="Controller">
+		select
+			c.*,
+			h.HouseName house_name
+		from controller_GH c
+		join House_GH h on h.Id = c.house_id and h.ZoneCode = c.zone_name
+		where h.ZoneCode = #{_parameter}
+	</select>
+	
+	<select id="queryHouseLeftJoinControllerByZoneName" parameterType="String" resultMap="Controller">
+		select 
+			c.controller_id,
+			c.controller_ip,
+			c.controller_port,
+			h.ZoneCode zone_name,
+			h.HouseName house_name,
+			h.Id house_id
+		from House_GH h 
+		left join controller_GH c on c.house_id = h.Id and h.ZoneCode = c.zone_name 
+		where h.ZoneCode = #{_parameter}
+	</select>
+	
+	<insert id="saveController" parameterType="GHController">
+		insert into controller_GH 
+		(controller_ip,controller_port,house_id,zone_name)
+		values 
+		(#{controllerIp},#{controllerPort},#{houseId},#{zoneName})
+	</insert>
+	
+	<update id="updateController" parameterType="GHController">
+		update controller_GH set 
+		<trim suffixOverrides=",">
+			<if test="controllerIp != null">
+				controller_ip = #{controllerIp},
+			</if>
+			<if test="controllerPort != null">
+				controller_port = #{controllerPort},
+			</if>
+		</trim>
+		where controller_id = #{controllerId}
+	</update>
+	
+	<select id="queryControllerById" parameterType="int" resultMap="Controller">
+		select c.*,h.HouseName house_name
+		from controller_GH c
+		join House_GH h on h.Id = c.house_id and h.ZoneCode = c.zone_name
+		where c.controller_id = #{controllerId}
+	</select>
+</mapper>

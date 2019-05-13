@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyyh.greenhouse.dao.HouseDao" >
+  <resultMap id="House" type="com.lyyh.greenhouse.pojo.House_GH" >
+    <id column="Id" 		property="houseId" />
+    <result column="ZoneCode" 	property="zoneCode" />
+    <result column="HouseName" property="houseName" />
+  </resultMap>
+  <select id="findAllByZoneId" parameterType="int" resultMap="House">
+  	select h.*
+  	from house_GH h 
+  	join zone z on h.ZoneCode = z.zone_name
+  	where z.zone_id = #{zoneId}
+  </select>
+  
+  
+  <select id="getHouseName" resultType="String">
+  	select HouseName from House_GH h join zone z on h.ZoneCode = z.zone_name where z.zone_id = #{1} and h.Id = #{0}
+  </select>
+</mapper>
