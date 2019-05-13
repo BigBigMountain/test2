@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.lyyh.greenhouse.dao.EquipmentDao" >
+  <resultMap id="Equipment" type="com.lyyh.greenhouse.pojo.Equipment2" >
+  	<id column="equipment_id" property="equipmentId"/>
+  	<result column="equipment_code" property="equipmentCode"/>
+  	<result column="equipment_name" property="equipmentName"/>
+  	<result column="equipment_state" property="equipmentState"/>
+  	<result column="house_id" property="houseId"/>
+  </resultMap>
+  
+  <select id="queryAllByHouseId" parameterType="int" resultMap="Equipment">
+  	select * from equipment where house_id = #{houseId}
+  </select>
+  
+  <insert id="saveEquipment" parameterType="Equipment">
+  	insert into equipment 
+  	(equipment_code,equipment_name,house_id) 
+  	values 
+  	(#{equipmentCode},#{equipmentName},#{houseId})
+  </insert>
+  
+  <update id="updateEquipment" parameterType="Equipment">
+  	update equipment 
+  	 
+  	<trim prefix="set" suffixOverrides=",">
+	  	<if test="equipmentCode != null">
+		  	equipment_code=#{equipmentCode},
+	  	</if>
+	  	<if test="equipmentName != null">
+		  	equipment_name=#{equipmentName},
+	  	</if>
+	  	<if test="equipmentState != null">
+		  	equipmentState=#{equipmentState}
+	  	</if>
+  	</trim>
+  	where equipment_id = #{equipmentId}
+  </update>
+  
+  <delete id="delEquipmentById" parameterType="int">
+  	delete from equipment where equipment_id = #{equipmentId}
+  </delete>
+</mapper>
