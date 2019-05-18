@@ -8,6 +8,7 @@
 		<result column="number" property="number"/>
 		<result column="value" property="value"/>
 		<result column="datetime" property="datetime"/>
+		
 	</resultMap>
 	
 	<resultMap id="ValveDataVo" type="com.lyyh.fertilizer.pojo.ValveDataVo">
@@ -17,7 +18,7 @@
 		<result column="number" property="number"/>
 		<result column="value" property="value"/>
 		<result column="datetime" property="datetime"/>
-
+		<result column="count" property="count" />
 		<association property="fertilizerData" javaType="FertilizerData">
 			<id column="fd_id" property="fertilizerDataId" />
 			<result column="ec" property="ec" />
@@ -83,5 +84,26 @@
 		and fvd.fertilizer_id = #{fertilizerId}
 		and fvd.datetime between #{start} and #{end}
 		order by fvd.datetime desc,fvd.number
+	</select>
+	
+	
+	
+	<select id="queryVoByVo" resultMap="ValveDataVo">
+		select 
+			fvd.id,fvd.fertilizer_id,fvd.number,fvd.value,fvd.datetime,fvd.fertilizer_id
+			n.count
+		from fertilizer_valve_data fvd
+		join (
+			select datetime,fertilizer_id,value,count(id) count from fertilizer_valve_data 
+			where fertilizer_id = #{fertilizerId}
+				and value is not null
+				and datetime between #{start} and #{end}
+				<if number != null and number != 0>
+					and number = #{number}
+				</if>
+			group by datetime ,value ,fertilizer_id
+		) n on n.datetime = fvd.datetime and fvd.value = n.value and fvd.fertilizer_id = n.fertilizer_id
+		order by fvd.datetime,fvd.number
+
 	</select>
 </mapper>

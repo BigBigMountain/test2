@@ -20,6 +20,7 @@ public interface ValveDao {
 	
 	public List<ValveDataVo> queryVoByPeriod (@Param("fertilizerId") int fertilizerId,@Param("start") Date start,@Param("end") Date end);
 	
+	public List<ValveDataVo> queryVoByVo (@Param("fertilizerId") int fertilizerId,@Param("number") int number, @Param("start") Date start,@Param("end") Date end);
 	
 	
 }

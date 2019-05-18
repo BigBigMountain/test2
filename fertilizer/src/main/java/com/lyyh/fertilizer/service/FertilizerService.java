@@ -152,6 +152,6 @@ public interface FertilizerService {
 
 	public PumpState getPumpStatus(Integer fertilizerId) throws IOException;
 
-	
+	public void getIrrigationStatistics(int fertilizerId,int valveNum,Date start,Date end);
 
 }

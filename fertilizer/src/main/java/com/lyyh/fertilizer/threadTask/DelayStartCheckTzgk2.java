@@ -79,36 +79,38 @@ public class DelayStartCheckTzgk2 implements Runnable {
 		
 		try {
 			// plc的阀的状态
-			List<Integer> pvalveStates = FertilizerValveStates.getStatesByDtuCode(dtuCode);
-			
-			List<Tequipment> tequipments = TzgkUtils.getAllTequipment();
-			Map<String,Tequipment> map = new HashMap<String,Tequipment>();
-			if(tequipments != null && tequipments.size() > 0){
-				for (Tequipment tequipment : tequipments) {
-					map.put(tequipment.getEmac(), tequipment);
+			List<Integer> pvalveStatusList = FertilizerValveStates.getStatesByDtuCode(dtuCode);
+			//查询天正高科所有设备状态信息
+			List<Tequipment> tequipmentStatusList = TzgkUtils.getAllTequipment();
+			Map<String,Tequipment> tequipmentStatusMap = new HashMap<String,Tequipment>();
+			if(tequipmentStatusList != null && tequipmentStatusList.size() > 0){
+				for (Tequipment tequipment : tequipmentStatusList) {
+					tequipmentStatusMap.put(tequipment.getEmac(), tequipment);
 				}
 			}
-			
+			//查询指定施肥机下数据库中天正高科阀列表
 			List<Tvalve> tvalveList = fertilizerService.queryTvalvesByDtuCode(dtuCode);
 			Map<Integer,Integer> hasChangedValves = new HashMap<Integer,Integer>();
 			if(tvalveList != null && tvalveList.size() >0){
 				for (Tvalve tvalve : tvalveList) {
-					String eqmsg = map.get(tvalve.getEmac()).getEqmsg();
-					if (eqmsg == null || eqmsg == "null") {
-						TzgkUtils.sendCommand(tvalve, pvalveStates.get(tvalve.getNumber()-1));
-						diffValves.put(tvalve.getNumber(), pvalveStates.get(tvalve.getNumber()-1));
+					String eqmsg = tequipmentStatusMap.get(tvalve.getEmac()).getEqmsg();
+					if (eqmsg == null || eqmsg.equalsIgnoreCase("null")) {
+						TzgkUtils.sendCommand(tvalve, pvalveStatusList.get(tvalve.getNumber()-1));
+						diffValves.put(tvalve.getNumber(), pvalveStatusList.get(tvalve.getNumber()-1));
 						flag = true;
 					} else {
 						String[] split = eqmsg.split(",");
 						int parseInt = Integer.parseInt(split[tvalve.getPosition() - 1].substring(2));
-						if(parseInt != pvalveStates.get(tvalve.getNumber()-1)){
-							TzgkUtils.sendCommand(tvalve, pvalveStates.get(tvalve.getNumber()-1));
-							diffValves.put(tvalve.getNumber(), pvalveStates.get(tvalve.getNumber()-1));
+						if(parseInt != pvalveStatusList.get(tvalve.getNumber()-1)){
+							TzgkUtils.sendCommand(tvalve, pvalveStatusList.get(tvalve.getNumber()-1));
+							diffValves.put(tvalve.getNumber(), pvalveStatusList.get(tvalve.getNumber()-1));
 							flag = true;
 							System.out.println(DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss ")+"dtu编号 : "+dtuCode+" , 阀号 : "+tvalve.getNumber()+" , 第_"+(3-maxExecuteNum)+"_次比对plc与天正阀状态不一样,并发送命令");
 						}else{
 							Integer remove = diffValves.remove(tvalve.getNumber());
-							hasChangedValves.put(tvalve.getNumber(), remove);
+							if(remove != null){
+								hasChangedValves.put(tvalve.getNumber(), remove);
+							}
 						}
 					}
 				}

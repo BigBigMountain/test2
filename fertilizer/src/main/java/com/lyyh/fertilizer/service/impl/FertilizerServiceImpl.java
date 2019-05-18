@@ -41,6 +41,8 @@ import com.lyyh.fertilizer.pojo.SoilMoisture;
 import com.lyyh.fertilizer.pojo.ValveData;
 import com.lyyh.fertilizer.pojo.ValveDataVo;
 import com.lyyh.fertilizer.pojo.ValveValue;
+import com.lyyh.fertilizer.pojo.vo.ValveStatistics;
+import com.lyyh.fertilizer.pojo.vo.ValveStatistics.IrriRecord;
 import com.lyyh.fertilizer.service.FertilizerService;
 import com.lyyh.greenhouse.util.CommonUtils;
 import com.lyyh.greenhouse.util.dtu.DtuUtils;
@@ -64,10 +66,10 @@ public class FertilizerServiceImpl implements FertilizerService {
 
 	@Autowired
 	private TsoilMoistureDao tsoilMoistureDao;
-	
+
 	@Autowired
 	private ValveDao valveDao;
-	
+
 	@Override
 	public List<Fertilizer> queryAllFertilizer() {
 		return fertilizerDao.queryAll();
@@ -144,7 +146,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 		fertilizerDao.addData(data);
 		return data.getFertilizerDataId();
 	}
-	
+
 	@Override
 	public int addData(String dtuCode) {
 		// TODO Auto-generated method stub
@@ -152,7 +154,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 		fertilizerDao.addData(timeData);
 		return timeData.getFertilizerDataId();
 	}
-	
+
 	@Transactional
 	@Override
 	public void addDatas(List<FertilizerDataCollector> datas) {
@@ -175,7 +177,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 				fertilizerDao.addDatas(datas);
 			}
 		} catch (Exception e) {
-//			System.out.println("批量插入数据时出错");
+			// System.out.println("批量插入数据时出错");
 			e.printStackTrace();
 		}
 	}
@@ -188,21 +190,21 @@ public class FertilizerServiceImpl implements FertilizerService {
 		FertilizerDataCollector dataCollector = null;
 		try {
 			dataCollector = FertilizerUtils.readValue(dtuCode);
-//			System.out.println(dataCollector);
-//		} catch (SocketTimeoutException e) {
-//			try {
-//				dataCollector = FertilizerUtils.readValue(dtuCode);
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-////				System.out.println(" +++" + dtuCode + "+++业务层操作时不在线--1");
-//				// TODO 操作数据库,设置离线,什么时候设置在线呢?
-//				// fertilizerDao.setOffline(dtuCode);
-//				// 销毁连接
-//				// DtuUtils.destroyDtuById(dtuCode);
-//				e.printStackTrace();
-//			}
+			// System.out.println(dataCollector);
+			// } catch (SocketTimeoutException e) {
+			// try {
+			// dataCollector = FertilizerUtils.readValue(dtuCode);
+			// } catch (IOException e1) {
+			// e1.printStackTrace();
+			//// System.out.println(" +++" + dtuCode + "+++业务层操作时不在线--1");
+			// // TODO 操作数据库,设置离线,什么时候设置在线呢?
+			// // fertilizerDao.setOffline(dtuCode);
+			// // 销毁连接
+			// // DtuUtils.destroyDtuById(dtuCode);
+			// e.printStackTrace();
+			// }
 		} catch (IOException e) {
-//			System.out.println(" +++" + dtuCode + "+++业务层操作时不在线--2");
+			// System.out.println(" +++" + dtuCode + "+++业务层操作时不在线--2");
 			// TODO 操作数据库,设置离线,什么时候设置在线呢?
 			// fertilizerDao.setOffline(dtuCode);
 			// 销毁连接
@@ -420,49 +422,49 @@ public class FertilizerServiceImpl implements FertilizerService {
 	}
 
 	@Override
-	public String OpenOrCloseValves(Integer fertilizerId,List<ValveValue> valveValues) throws IOException{
+	public String OpenOrCloseValves(Integer fertilizerId, List<ValveValue> valveValues) throws IOException {
 		String msg = null;
-		//1.获取现在的阀的状态,
+		// 1.获取现在的阀的状态,
 		ManualControlPojo manualControlData = getManualControlData(fertilizerId);
-		if(manualControlData == null){
+		if (manualControlData == null) {
 			msg = "该用户下没有设置可远程控制的施肥机";
 		}
-		//2.组织阀控数据
-		try{
+		// 2.组织阀控数据
+		try {
 			for (ValveValue valveValue : valveValues) {
 				Field declaredField = ManualControlPojo.class.getDeclaredField("irrigValve" + valveValue.getValveNum());
 				declaredField.setAccessible(true);
 				declaredField.set(manualControlData, valveValue.getValue());
 			}
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//3,发送数据
+		// 3,发送数据
 		FertilizerUtils.writeManualControl(manualControlData);
 		return msg;
 	}
+
 	@Override
-	public String OpenOrCloseValve(Integer fertilizerId, ValveValue valveValue) throws IOException{
+	public String OpenOrCloseValve(Integer fertilizerId, ValveValue valveValue) throws IOException {
 		String msg = null;
-		//1.获取现在的阀的状态,
+		// 1.获取现在的阀的状态,
 		ManualControlPojo manualControlData = getManualControlData(fertilizerId);
-		if(manualControlData == null){
+		if (manualControlData == null) {
 			msg = "该用户下没有设置可远程控制的施肥机";
 		}
-		//2.组织阀控数据
-		try{
+		// 2.组织阀控数据
+		try {
 			Field declaredField = ManualControlPojo.class.getDeclaredField("irrigValve" + valveValue.getValveNum());
 			declaredField.setAccessible(true);
 			declaredField.set(manualControlData, valveValue.getValue());
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//3,发送数据
+		// 3,发送数据
 		FertilizerUtils.writeManualControl(manualControlData);
 		return msg;
 	}
-	
-	
+
 	@Override
 	public String setManualControl(ManualControlPojo manualControlData, int valveNum, int value) throws IOException {
 		boolean flag = false;// 标志着是否找到当前阀所对应的程序,
@@ -499,7 +501,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 							program$.setAccessible(true);
 							program$.set(programControlData, 1);
 							flag = true;
-//							System.out.println(field2.getName());
+							// System.out.println(field2.getName());
 							break;
 						}
 					}
@@ -518,7 +520,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 				// 开启一个线程,开启手动模式,立即开始执行检查Tzgk,
 				// ThreadUtils.execute((StartManualMode)ac.getBean("manualMode"));
 			} else {
-				//TODO 测试时放开注解
+				// TODO 测试时放开注解
 				FertilizerUtils.writeProgramControl(programControlData);
 				FertilizerUtils.writeManualControl(manualControlData);
 				msg = "当前阀无对应程序";
@@ -539,44 +541,44 @@ public class FertilizerServiceImpl implements FertilizerService {
 		String dtuCode = fertilizerDao.selectByFertilizerId(programControlData.getFertilizerId()).getDtuCode();
 		// 开启程序模式,执行plc检查,
 		// ThreadUtils.execute((StartProgramMode)ac.getBean("programMode"));
-//获取pvm值,查找当前程序是否有阀控,如果没有阀控,则不执行当前控制,返回提示"当前程序无对应阀,请设置程序"
+		// 获取pvm值,查找当前程序是否有阀控,如果没有阀控,则不执行当前控制,返回提示"当前程序无对应阀,请设置程序"
 		ProgramValveMapping pvm = FertilizerUtils.getProgramValveMapping(dtuCode);
 		// 设置程序控制
 		programControlData.setDtuCode(dtuCode);
 		programControlData.setManualOrProgram(0);
 		FertilizerUtils.writeProgramControl(programControlData);
 	}
-	
+
 	@Override
 	public String setProgramControl(Integer fertilizerId, Integer programNum, Integer value) throws IOException {
 		String msg = null;
 		String dtuCode = fertilizerDao.selectByFertilizerId(fertilizerId).getDtuCode();
 		try {
-			
-		if(value == 1){//如果是开启程序,则检查有没有对应的阀控
-			//获取pvm值,查找当前程序是否有阀控,如果没有阀控,则不执行当前控制,返回提示"当前程序无对应阀,请设置程序"
-			ProgramValveMapping pvm = FertilizerUtils.getProgramValveMapping(dtuCode);
-			Field declaredField = ProgramValveMapping.class.getDeclaredField("program"+programNum);
-			declaredField.setAccessible(true);
-			byte[] valves = (byte[]) declaredField.get(pvm);
-			boolean flag = false;
-			for (byte b : valves) {
-				if(b != 0 ){
-					flag = true;
-					break;
+
+			if (value == 1) {// 如果是开启程序,则检查有没有对应的阀控
+				// 获取pvm值,查找当前程序是否有阀控,如果没有阀控,则不执行当前控制,返回提示"当前程序无对应阀,请设置程序"
+				ProgramValveMapping pvm = FertilizerUtils.getProgramValveMapping(dtuCode);
+				Field declaredField = ProgramValveMapping.class.getDeclaredField("program" + programNum);
+				declaredField.setAccessible(true);
+				byte[] valves = (byte[]) declaredField.get(pvm);
+				boolean flag = false;
+				for (byte b : valves) {
+					if (b != 0) {
+						flag = true;
+						break;
+					}
 				}
+				if (flag) {
+					// 设置程序控制
+					FertilizerUtils.writeProgramControl(dtuCode, programNum, value, 0);
+				} else {
+					// TODO 测试时放开注解
+					FertilizerUtils.writeProgramControl(dtuCode, programNum, value, 0);
+					msg = "当前选定程序无对应阀,请设置程序!";
+				}
+			} else if (value == 0) {// 如果是关闭程序,则直接执行
+				FertilizerUtils.writeProgramControl(dtuCode, programNum, value, 0);
 			}
-			if(flag){
-				//设置程序控制
-				FertilizerUtils.writeProgramControl(dtuCode,programNum,value,0);
-			}else{
-				// TODO 测试时放开注解
-				FertilizerUtils.writeProgramControl(dtuCode,programNum,value,0);
-				msg = "当前选定程序无对应阀,请设置程序!";
-			}
-		}else if(value == 0){//如果是关闭程序,则直接执行
-			FertilizerUtils.writeProgramControl(dtuCode,programNum,value,0);
-		}
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -687,14 +689,14 @@ public class FertilizerServiceImpl implements FertilizerService {
 		if (null != fertilizer && null != fertilizer.getDtuCode()) {
 			try {
 				int currentProgram = FertilizerUtils.readCurrentProgram(fertilizer.getDtuCode());
-				for(int i = 0;i<16;i++){
+				for (int i = 0; i < 16; i++) {
 					programs.add(0);
 				}
 				if (currentProgram > 0 && currentProgram <= programs.size()) {
 					programs.set(currentProgram - 1, 1);
 				}
-//				System.out.println(currentProgram);
-//				System.out.println(programs);
+				// System.out.println(currentProgram);
+				// System.out.println(programs);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
@@ -719,14 +721,14 @@ public class FertilizerServiceImpl implements FertilizerService {
 	public SoilMoisture getSoilMoisture(String username) {
 		List<TsoilTempAndHum> tahs = tsoilMoistureDao.queryNewestSoilMoisture(username);
 		SoilMoisture sm = new SoilMoisture();
-		if(tahs.size()>0){
+		if (tahs.size() > 0) {
 			for (TsoilTempAndHum tah : tahs) {
 				sm.addSoilTempAndHum(tah);
 			}
 		} else {
 			sm.addNull();
 		}
-		
+
 		return sm;
 	}
 
@@ -734,14 +736,14 @@ public class FertilizerServiceImpl implements FertilizerService {
 	public IrrigationProgram getProgramByIdAndNum(Integer fertilizerId, Integer programNum) throws IOException {
 		Fertilizer fertilizer = fertilizerDao.selectByFertilizerId(fertilizerId);
 		if (null != fertilizer && null != fertilizer.getDtuCode()) {
-			return getProgramInfo(fertilizer.getDtuCode(),programNum);
+			return getProgramInfo(fertilizer.getDtuCode(), programNum);
 		}
 		return null;
 	}
 
 	public IrrigationProgram getProgramInfo(String dtuCode, Integer programNum) throws IOException {
 		IrrigationProgram program = null;
-		program = FertilizerUtils.getProgramInfo(dtuCode,programNum);
+		program = FertilizerUtils.getProgramInfo(dtuCode, programNum);
 		return program;
 	}
 
@@ -749,26 +751,26 @@ public class FertilizerServiceImpl implements FertilizerService {
 	public void setProgram(Integer fertilizerId, IrrigationProgram irrigationProgram) throws IOException {
 		Fertilizer fertilizer = fertilizerDao.selectByFertilizerId(fertilizerId);
 		if (null != fertilizer && null != fertilizer.getDtuCode()) {
-			setProgramInfo(fertilizer.getDtuCode(),irrigationProgram);
+			setProgramInfo(fertilizer.getDtuCode(), irrigationProgram);
 		}
 	}
 
 	private void setProgramInfo(String dtuCode, IrrigationProgram irrigationProgram) throws IOException {
-		FertilizerUtils.setProgramInfo(dtuCode,irrigationProgram);
+		FertilizerUtils.setProgramInfo(dtuCode, irrigationProgram);
 	}
 
 	@Override
 	public IrrigationFormula getFormulaByIdAndNum(Integer fertilizerId, Integer formulaNum) throws IOException {
 		Fertilizer fertilizer = fertilizerDao.selectByFertilizerId(fertilizerId);
 		if (null != fertilizer && null != fertilizer.getDtuCode()) {
-			return getFormulaInfo(fertilizer.getDtuCode(),formulaNum);
+			return getFormulaInfo(fertilizer.getDtuCode(), formulaNum);
 		}
 		return null;
 	}
 
 	private IrrigationFormula getFormulaInfo(String dtuCode, Integer formulaNum) throws IOException {
 		IrrigationFormula formula = null;
-		formula = FertilizerUtils.getFormulaInfo(dtuCode,formulaNum);
+		formula = FertilizerUtils.getFormulaInfo(dtuCode, formulaNum);
 		return formula;
 	}
 
@@ -776,12 +778,12 @@ public class FertilizerServiceImpl implements FertilizerService {
 	public void setFormula(Integer fertilizerId, IrrigationFormula irrigationFormula) throws IOException {
 		Fertilizer fertilizer = fertilizerDao.selectByFertilizerId(fertilizerId);
 		if (null != fertilizer && null != fertilizer.getDtuCode()) {
-			setFormulaInfo(fertilizer.getDtuCode(),irrigationFormula);
+			setFormulaInfo(fertilizer.getDtuCode(), irrigationFormula);
 		}
 	}
 
 	private void setFormulaInfo(String dtuCode, IrrigationFormula irrigationFormula) throws IOException {
-		FertilizerUtils.setFormulaInfo(dtuCode,irrigationFormula);
+		FertilizerUtils.setFormulaInfo(dtuCode, irrigationFormula);
 	}
 
 	@Override
@@ -791,7 +793,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 
 	@Override
 	public List<Tvalve> queryTvalvesByDtuCode(String dtuCode) {
-		
+
 		return tvalveDao.queryTvalvesByDtuCode(dtuCode);
 	}
 
@@ -802,7 +804,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 
 	@Override
 	public void insertTimeDataAndValveStatus(String dtuCode, Map<Integer, Integer> valveStatus) {
-		//TODO 先查询出实时数据,再把阀的状态存储起来
+		// TODO 先查询出实时数据,再把阀的状态存储起来
 		FertilizerDataCollector timeData = getTimeData(dtuCode);
 		int timeDataId = addData(timeData);
 		Fertilizer fertilizer = selectByDtuCode(dtuCode);
@@ -815,7 +817,7 @@ public class FertilizerServiceImpl implements FertilizerService {
 			data.setValue(entry.getValue());
 			dataList.add(data);
 		}
-		if(!CollectionUtils.isEmpty(dataList)){
+		if (!CollectionUtils.isEmpty(dataList)) {
 			valveDao.insertValveDataList(dataList);
 		}
 	}
@@ -826,26 +828,127 @@ public class FertilizerServiceImpl implements FertilizerService {
 		Date end = calendar.getTime();
 		calendar.add(Calendar.DAY_OF_MONTH, -2);
 		Date start = calendar.getTime();
-		return getValveRecord(fertilizerId,start,end);
+		return getValveRecord(fertilizerId, start, end);
 	}
 
 	@Override
 	public List<ValveDataVo> getValveRecord(Integer fertilizerId, Date start, Date end) {
-//		List<ValveData> valveDatas = valveDao.queryByPeriod(fertilizerId, start, end);
+		// List<ValveData> valveDatas = valveDao.queryByPeriod(fertilizerId,
+		// start, end);
 		List<ValveDataVo> valveDataVos = valveDao.queryVoByPeriod(fertilizerId, start, end);
-//		System.out.println(valveDatas);
-//		System.out.println(valveDataVos);
+		// System.out.println(valveDatas);
+		// System.out.println(valveDataVos);
 		return valveDataVos;
 	}
 
 	@Override
 	public PumpState getPumpStatus(Integer fertilizerId) throws IOException {
 		Fertilizer fertilizer = fertilizerDao.selectByFertilizerId(fertilizerId);
-		
+
 		PumpState pumpStatus = FertilizerUtils.getPumpStatus(fertilizer.getDtuCode());
 		return pumpStatus;
+
+	}
+
+	@Override
+	public void getIrrigationStatistics(int fertilizerId, int valveNum, Date start, Date end) {
+		if (end == null)
+			end = new Date();
+		if (start == null)
+			start = new Date(end.getTime() - 1000 * 3600 * 24);
+		if (start.getTime() < end.getTime()) {
+			Date temp;
+			temp = start;
+			start = end;
+			end = temp;
+		}
+
+		// 1,获取灌溉记录
+		List<ValveDataVo> ValveStatusList = valveDao.queryVoByVo(fertilizerId, valveNum, start, end);
+		// 2,获取实时数据
+		FertilizerData vo = new FertilizerData();
+		vo.setFertilizerId(fertilizerId);
+		vo.setStart(start);
+		vo.setEnd(end);
+
+		List<FertilizerData> timeDataList = fertilizerDao.queryDatasByVo(vo);
+
+		// 3,获取每个阀的灌溉量
+		Map<Integer, Object> map = new HashMap<>();
+
+	}
+
+	public void statistics(List<ValveDataVo> valveStatusList,List<FertilizerData> timeDataList,Date end){
+		Map<Integer,ValveStatistics> map = new HashMap<>();
+		//循环时用于记录上次的阀状态信息
+		ValveDataVo lastValve = null;
+		for (int i = 0; i < valveStatusList.size(); i++) {
+			ValveDataVo thisValve = valveStatusList.get(i);
+			int value = thisValve.getValue();
+			int valveNumber = thisValve.getNumber();
+			
+			/**
+			 * 如果当前阀是第一个阀,且当前阀状态是关
+			 * 或当前阀和上一个阀是同一个阀,且不是最后一个阀,且状态一样,
+			 * 则跳过循环
+			 */
+			if((lastValve == null && value == 0 )
+					|| (lastValve != null && valveNumber == lastValve.getNumber() && i < valveStatusList.size()-1 && value == lastValve.getValue() ) ){
+				continue;
+			}
+			//如果当前阀和上一个阀不是同一个阀
+			if(lastValve != null && valveNumber != lastValve.getNumber()){
+				// 如果上一个阀的状态是开,需要给上一个阀补一个记录
+				if(lastValve.getValue() == 1){
+					List<IrriRecord> irriRecords = map.get(lastValve.getNumber()).getIrriRecords();
+					IrriRecord irriRecord = irriRecords.get(irriRecords.size()-1);
+					irriRecord.setEnd(end);
+					double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(),end);
+					irriRecord.setIrrigationVolume(irrigationVolume);
+				}
+				if(value == 0){
+					continue;
+				}
+			}
+			
+			//如果没有统计过,则创建一个统计信息
+			if(!map.containsKey(valveNumber)){
+				ValveStatistics valveStatistics = new ValveStatistics(valveNumber);
+				map.put(valveNumber, valveStatistics);
+			}
+			ValveStatistics valveStatistics = map.get(valveNumber);
+			//如果阀的状态是开,新建一个记录
+			if(value == 1){
+				IrriRecord irriRecord = new IrriRecord(thisValve.getDatetime());
+				valveStatistics.getIrriRecords().add(irriRecord);
+			}else{
+				List<IrriRecord> irriRecords = valveStatistics.getIrriRecords();
+				IrriRecord irriRecord = irriRecords.get(irriRecords.size()-1);
+				irriRecord.setEnd(thisValve.getDatetime());
+				double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(),thisValve.getDatetime());
+				irriRecord.setIrrigationVolume(irrigationVolume);
+			}
+			
+			
+			//如果当前阀是最后一个阀,且当前阀的状态是开,需要给自己补一个关的记录
+			if(i == valveStatusList.size()-1 && value == 1){
+				List<IrriRecord> irriRecords = map.get(valveNumber).getIrriRecords();
+				IrriRecord irriRecord = irriRecords.get(irriRecords.size()-1);
+				irriRecord.setEnd(end);
+				double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(),end);
+				irriRecord.setIrrigationVolume(irrigationVolume);
+			}
+			
+			lastValve = thisValve;
+		}
+		
+		
 		
 	}
 
+	private double getIrrigationVolume(List<FertilizerData> timeDataList, Date datetime, Date end) {
+		
+		return 0;
+	}
 
 }
