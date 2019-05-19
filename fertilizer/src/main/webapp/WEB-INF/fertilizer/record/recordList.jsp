@@ -5,7 +5,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>setting - FertilizerList</title>
+	<script src="/js/datepicker/foundation-datepicker.js"></script>
+	<script src="/js/datepicker/foundation-datepicker.zh-CN.js"></script>
+	<title>setting - FertilizerList</title>
 <style type="text/css">
 #bg {
 	display: none;
@@ -51,8 +53,8 @@ $(function(){
 				<option value="${fertilizer.fertilizerId }" <c:if test="${fertilizerId == fertilizer.fertilizerId }">selected="selected"</c:if>>${fertilizer.fertilizerName }</option>
 			</c:forEach>
 		</select>
-		开始时间:<input type="text"  name="start" value="" id="demo-2">
-		结束时间:<input type="text"  name="end" value="" id="demo-2">
+		开始时间:<input type="text"  name="start" value="" id="start">
+		结束时间:<input type="text"  name="end" value="" id="end">
 	</div>
 	<div class="clear"></div>
 </div>
@@ -113,7 +115,7 @@ $(function(){
 
 
 <script type="text/javascript">
-$('#demo-2').fdatepicker({
+$('#start').fdatepicker({
 	format: 'yyyy-mm-dd hh:ii',
 	pickTime: true
 });
