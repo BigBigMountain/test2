@@ -15,6 +15,7 @@
 		<li><a href="historyData.do" target="rightFrame">历史数据</a></li>
 		<li><a href="toControl.do" target="rightFrame">操作控制</a></li>
 		<li><a href="getValveRecord.do" target="rightFrame">灌溉记录</a></li>
+		<li><a href="getIrrigationStatistics.do" target="rightFrame">灌溉统计</a></li>
      </ul>
 </div>
 </body>

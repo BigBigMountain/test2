@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.lyyh.fertilizer.pojo.vo.ValveStatistics;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -312,12 +313,13 @@ public class FertilizerController {
 
 	@RequestMapping("historyData.do")
 	public String historyData(HttpSession session, Model model, String dtuCode, Integer fertilizerId) {
-		List<Fertilizer> fertilizers = (List<Fertilizer>) session.getAttribute("fertilizers");
-		if (fertilizers == null) {
-			User user = (User) session.getAttribute("loginUser");
-			fertilizers = fertilizerService.queryAllByUid(user.getUserId());
-			session.setAttribute("fertilizers", fertilizers);
-		}
+//		List<Fertilizer> fertilizers = (List<Fertilizer>) session.getAttribute("fertilizers");
+//		if (fertilizers == null) {
+//			User user = (User) session.getAttribute("loginUser");
+//			fertilizers = fertilizerService.queryAllByUid(user.getUserId());
+//			session.setAttribute("fertilizers", fertilizers);
+//		}
+		List<Fertilizer> fertilizers = getFertilizers(session);
 		model.addAttribute("fertilizers", fertilizers);
 		if (dtuCode == null) {
 			if (null != fertilizers && fertilizers.size() > 0) {
@@ -338,12 +340,7 @@ public class FertilizerController {
 	public String toControl(HttpSession session, Model model, Integer fertilizerId) {
 		// TODO 去控制界面
 		// 从session中获取fertilizer列表,如果没有,数据库查询并放入session中
-		List<Fertilizer> fertilizers = (List<Fertilizer>) session.getAttribute("fertilizers");
-		if (fertilizers == null) {
-			User user = (User) session.getAttribute("loginUser");
-			fertilizers = fertilizerService.queryAllByUid(user.getUserId());
-			session.setAttribute("fertilizers", fertilizers);
-		}
+		List<Fertilizer> fertilizers = getFertilizers(session);
 		model.addAttribute("fertilizers", fertilizers);
 
 		// 添加fertilizerId到model中
@@ -941,5 +938,35 @@ public class FertilizerController {
 			json.put("msg", msg);
 		}
 		return json;
+	}
+	
+	@RequestMapping("/getIrrigationStatistics.do")
+	public String getIrrigationStatistics(HttpSession session,Model model, Integer fertilizerId,Integer valveNum,Date start,Date end){
+		List<Fertilizer> fertilizers = getFertilizers(session);
+		if(fertilizers == null){
+			model.addAttribute("msg","当前用户还未添加施肥机");
+			return "record/recordList";
+		}
+		if(fertilizerId == null || fertilizerId == 0){
+			fertilizerId = fertilizers.get(0).getFertilizerId();
+		}
+
+		List<ValveStatistics> irrigationStatistics = fertilizerService.getIrrigationStatistics(fertilizerId, valveNum, start, end);
+
+		model.addAttribute("fertilizerId",fertilizerId);
+		model.addAttribute("fertilizers",fertilizers);
+		model.addAttribute("irrigationStatistics",irrigationStatistics);
+
+		return  "statistics/irrigationStatistics";
+	}
+	
+	private List<Fertilizer> getFertilizers(HttpSession session){
+		List<Fertilizer> fertilizers = (List<Fertilizer>) session.getAttribute("fertilizers");
+		if (fertilizers == null) {
+			User user = (User) session.getAttribute("loginUser");
+			fertilizers = fertilizerService.queryAllByUid(user.getUserId());
+			session.setAttribute("fertilizers", fertilizers);
+		}
+		return fertilizers;
 	}
 }

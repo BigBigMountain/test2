@@ -1,6 +1,7 @@
 package com.lyyh.fertilizer.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import com.lyyh.fertilizer.pojo.PumpState;
 import com.lyyh.fertilizer.pojo.SoilMoisture;
 import com.lyyh.fertilizer.pojo.ValveDataVo;
 import com.lyyh.fertilizer.pojo.ValveValue;
+import com.lyyh.fertilizer.pojo.vo.ValveStatistics;
 import com.lyyh.tzgk.pojo.Tvalve;
 
 public interface FertilizerService {
@@ -152,6 +154,6 @@ public interface FertilizerService {
 
 	public PumpState getPumpStatus(Integer fertilizerId) throws IOException;
 
-	public void getIrrigationStatistics(int fertilizerId,int valveNum,Date start,Date end);
+	public List<ValveStatistics> getIrrigationStatistics(int fertilizerId, int valveNum, Date start, Date end);
 
 }
