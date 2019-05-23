@@ -161,6 +161,13 @@
 			and user_id = #{userId}
 		</if>
 	</select>
+	<select id="queryDatas" resultMap="FertilizerData">
+		select id,rateFlow,time
+		from fertilizerData 
+		where fertilizer_id = #{fertilizerId}
+		and time between #{start} and #{end}
+		order by time
+	</select>
 	
 	<select id="queryAllHaveDtuAndOnlineAndTZGK" resultMap="Fertilizer">
 		select *

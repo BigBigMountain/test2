@@ -81,18 +81,23 @@
                         ${statistics.valveNum }号阀
                 </td>
                 <td align="center" style="height:30px;font-size:18px;">
-                    <table >
-                        <tr>
-                            <c:forEach items="${statistics.irriRecords}" var="record" varStatus="status">
+                    <table cellspacing="3" cellpadding="3" width="100%" border="1" style="color: blue">
+						<tr>
+							<c:forEach items="${statistics.irriRecords}" var="record" varStatus="status">
                                 <td>
 
-                                    开:<fmt:formatDate type="both" value="${record.start}" /> &nbsp;&nbsp;&nbsp;&nbsp;
-                                    关:<fmt:formatDate type="both" value="${record.end}" />&nbsp;&nbsp;&nbsp;&nbsp;
-                                    灌溉量:${record.irrigationVolume}
+                                    <fmt:formatDate type="both" value="${record.start}" pattern="MM月dd号                    HH:mm:ss"/> 
+                                    &nbsp;&nbsp;&nbsp;---- &nbsp;&nbsp;&nbsp; 
+                                    <fmt:formatDate type="both" value="${record.end}" pattern="HH:mm:ss"/><br/>
+                                    	灌溉量:&nbsp;&nbsp;&nbsp;${record.irrigationVolume}
 
                                 </td>
-                            </c:forEach>
-                        </tr>
+						<c:if test = "${status.count%5 == 0 }" >
+							</tr>
+							<tr>
+						</c:if >
+							</c:forEach>
+						</tr>
 
 
                     </table>

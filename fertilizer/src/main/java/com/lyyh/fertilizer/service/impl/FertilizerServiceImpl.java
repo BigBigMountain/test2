@@ -844,12 +844,12 @@ public class FertilizerServiceImpl implements FertilizerService {
     }
 
     @Override
-    public List<ValveStatistics> getIrrigationStatistics(int fertilizerId, int valveNum, Date start, Date end) {
+    public List<ValveStatistics> getIrrigationStatistics(Integer fertilizerId, Integer valveNum, Date start, Date end) {
         if (end == null)
             end = new Date();
         if (start == null)
             start = new Date(end.getTime() - 1000 * 3600 * 24);
-        if (start.getTime() < end.getTime()) {
+        if (start.getTime() > end.getTime()) {
             Date temp;
             temp = start;
             start = end;
@@ -859,12 +859,8 @@ public class FertilizerServiceImpl implements FertilizerService {
         // 1,获取灌溉记录
         List<ValveDataVo> valveStatusList = valveDao.queryVoByVo(fertilizerId, valveNum, start, end);
         // 2,获取实时数据
-        FertilizerData vo = new FertilizerData();
-        vo.setFertilizerId(fertilizerId);
-        vo.setStart(start);
-        vo.setEnd(end);
 
-        List<FertilizerData> timeDataList = fertilizerDao.queryDatasByVo(vo);
+        List<FertilizerData> timeDataList = fertilizerDao.queryDatas(fertilizerId,start,end);
 
         // 3,获取每个阀的灌溉量
         Map<Integer, ValveStatistics> statistics = statistics(valveStatusList, timeDataList, end);

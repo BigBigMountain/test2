@@ -1,6 +1,9 @@
 package com.lyyh.fertilizer.dao;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.lyyh.fertilizer.pojo.Climatic;
 import com.lyyh.fertilizer.pojo.Fertilizer;
@@ -55,6 +58,8 @@ public interface FertilizerDao {
 	//查询一个施肥机下两个时间点之间的所有数据
 	//条件查询,比如一段时间内某台施肥机或某个用户的所有数据
 	public List<FertilizerData> queryDatasByVo(FertilizerData vo);
+	
+	public List<FertilizerData> queryDatas(@Param("fertilizerId")Integer fertilizerId, @Param("start")Date start, @Param("end")Date end);
 /*	
 	//查询一个施肥机下当天的所有数据
 	public List<FertilizerData> queryOneDayDatasByFertilizerId(int fertilizerId);

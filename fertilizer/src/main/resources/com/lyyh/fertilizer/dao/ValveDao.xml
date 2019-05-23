@@ -90,7 +90,7 @@
 	
 	<select id="queryVoByVo" resultMap="ValveDataVo">
 		select 
-			fvd.id,fvd.fertilizer_id,fvd.number,fvd.value,fvd.datetime,fvd.fertilizer_id
+			fvd.id,fvd.fertilizer_id,fvd.number,fvd.value,fvd.datetime,fvd.fertilizer_id,
 			n.count
 		from fertilizer_valve_data fvd
 		join (
@@ -103,7 +103,7 @@
 				</if>
 			group by datetime ,value ,fertilizer_id
 		) n on n.datetime = fvd.datetime and fvd.value = n.value and fvd.fertilizer_id = n.fertilizer_id
-		order by fvd.datetime,fvd.number
+		order by fvd.number,fvd.datetime
 
 	</select>
 </mapper>

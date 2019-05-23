@@ -14,13 +14,13 @@ public interface ValveDao {
 	
 	public void insertValveDataList(List<ValveData> dataList);
 	
-	public List<ValveData> queryByFertilizerId(int fertilizerId);
+	public List<ValveData> queryByFertilizerId(Integer fertilizerId);
 	
-	public List<ValveData> queryByPeriod(@Param("fertilizerId") int fertilizerId,@Param("start") Date start,@Param("end") Date end);
+	public List<ValveData> queryByPeriod(@Param("fertilizerId") Integer fertilizerId,@Param("start") Date start,@Param("end") Date end);
 	
-	public List<ValveDataVo> queryVoByPeriod (@Param("fertilizerId") int fertilizerId,@Param("start") Date start,@Param("end") Date end);
+	public List<ValveDataVo> queryVoByPeriod (@Param("fertilizerId") Integer fertilizerId,@Param("start") Date start,@Param("end") Date end);
 	
-	public List<ValveDataVo> queryVoByVo (@Param("fertilizerId") int fertilizerId,@Param("number") int number, @Param("start") Date start,@Param("end") Date end);
+	public List<ValveDataVo> queryVoByVo (@Param("fertilizerId") Integer fertilizerId,@Param("number") Integer number, @Param("start") Date start,@Param("end") Date end);
 	
 	
 }
