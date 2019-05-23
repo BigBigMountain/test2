@@ -98,7 +98,7 @@
 			where fertilizer_id = #{fertilizerId}
 				and value is not null
 				and datetime between #{start} and #{end}
-				<if test = "number != null and number != 0"> 
+				<if test = "number != null and number != 0">
 					and number = #{number}
 				</if>
 			group by datetime ,value ,fertilizer_id

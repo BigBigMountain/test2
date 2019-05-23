@@ -8,6 +8,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.lyyh.greenhouse.util.MapList;
+import com.lyyh.greenhouse.util.MapTreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -858,12 +860,19 @@ public class FertilizerServiceImpl implements FertilizerService {
 
         // 1,获取灌溉记录
         List<ValveDataVo> valveStatusList = valveDao.queryVoByVo(fertilizerId, valveNum, start, end);
-        // 2,获取实时数据
+        MapList<Integer, ValveDataVo> mapList = new MapList<>(new Comparator<ValveDataVo>() {
+            @Override
+            public int compare(ValveDataVo o1, ValveDataVo o2) {
+                return o1.getDatetime().getTime() - o2.getDatetime().getTime() >= 0 ? 1 : -1;
+            }
+        });
+        for (ValveDataVo valveDataVo : valveStatusList) {
+            mapList.put(valveDataVo.getNumber(),valveDataVo);
+        }
 
-        List<FertilizerData> timeDataList = fertilizerDao.queryDatas(fertilizerId,start,end);
 
         // 3,获取每个阀的灌溉量
-        Map<Integer, ValveStatistics> statistics = statistics(valveStatusList, timeDataList, end);
+        Map<Integer, ValveStatistics> statistics = statistics(fertilizerId,mapList,  end);
         ArrayList<ValveStatistics> valvestatisticsList = new ArrayList<>();
 
         Set<Integer> integers = statistics.keySet();
@@ -880,12 +889,14 @@ public class FertilizerServiceImpl implements FertilizerService {
         return valvestatisticsList;
     }
 
-    public Map<Integer, ValveStatistics> statistics(List<ValveDataVo> valveStatusList, List<FertilizerData> timeDataList, Date end) {
+    public Map<Integer, ValveStatistics> statistics(Integer fertilizerId,MapList<Integer, ValveDataVo> mapList, Date end) {
         Map<Integer, ValveStatistics> map = new HashMap<>();
+        for (Integer integer : mapList.keySet()) {
+            List<ValveDataVo> valveDataVos = mapList.get(integer);
         //循环时用于记录上次的阀状态信息
         ValveDataVo lastValve = null;
-        for (int i = 0; i < valveStatusList.size(); i++) {
-            ValveDataVo thisValve = valveStatusList.get(i);
+        for (int i = 0; i < valveDataVos.size(); i++) {
+            ValveDataVo thisValve = valveDataVos.get(i);
             int value = thisValve.getValue();
             int valveNumber = thisValve.getNumber();
 
@@ -895,7 +906,7 @@ public class FertilizerServiceImpl implements FertilizerService {
              * 则跳过循环
              */
             if ((lastValve == null && value == 0)
-                    || (lastValve != null && valveNumber == lastValve.getNumber() && i < valveStatusList.size() - 1 && value == lastValve.getValue())) {
+                    || (lastValve != null && valveNumber == lastValve.getNumber() && i < valveDataVos.size() - 1 && value == lastValve.getValue())) {
                 continue;
             }
             //如果当前阀和上一个阀不是同一个阀
@@ -905,7 +916,7 @@ public class FertilizerServiceImpl implements FertilizerService {
                     List<IrriRecord> irriRecords = map.get(lastValve.getNumber()).getIrriRecords();
                     IrriRecord irriRecord = irriRecords.get(irriRecords.size() - 1);
                     irriRecord.setEnd(end);
-                    double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(), end,lastValve.getCount());
+                    double irrigationVolume = getIrrigationVolume(fertilizerId, lastValve.getDatetime(), end,lastValve.getCount());
                     irriRecord.setIrrigationVolume(irrigationVolume);
                 }
                 if (value == 0) {
@@ -927,29 +938,34 @@ public class FertilizerServiceImpl implements FertilizerService {
                 List<IrriRecord> irriRecords = valveStatistics.getIrriRecords();
                 IrriRecord irriRecord = irriRecords.get(irriRecords.size() - 1);
                 irriRecord.setEnd(thisValve.getDatetime());
-                double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(), thisValve.getDatetime(),thisValve.getCount());
+                double irrigationVolume = getIrrigationVolume(fertilizerId, lastValve.getDatetime(), thisValve.getDatetime(),thisValve.getCount());
                 irriRecord.setIrrigationVolume(irrigationVolume);
             }
 
 
             //如果当前阀是最后一个阀,且当前阀的状态是开,需要给自己补一个关的记录
-            if (i == valveStatusList.size() - 1 && value == 1) {
+            if (i == valveDataVos.size() - 1 && value == 1) {
                 List<IrriRecord> irriRecords = map.get(valveNumber).getIrriRecords();
                 IrriRecord irriRecord = irriRecords.get(irriRecords.size() - 1);
                 irriRecord.setEnd(end);
-                double irrigationVolume = getIrrigationVolume(timeDataList, lastValve.getDatetime(), end,thisValve.getCount());
+                double irrigationVolume = getIrrigationVolume(fertilizerId, lastValve.getDatetime(), end,thisValve.getCount());
                 irriRecord.setIrrigationVolume(irrigationVolume);
             }
 
             lastValve = thisValve;
 
         }
+        }
 
         return map;
 
     }
 
-    private double getIrrigationVolume(List<FertilizerData> timeDataList, Date start, Date end,int count) {
+    private double getIrrigationVolume(Integer fertilizerId,Date start, Date end,int count) {
+        // 2,获取实时数据
+
+        List<FertilizerData> timeDataList = fertilizerDao.queryDatas(fertilizerId,start,end);
+
         if (start.getTime() > end.getTime()) {
             Date d = start;
             start = end;

@@ -162,10 +162,10 @@
 		</if>
 	</select>
 	<select id="queryDatas" resultMap="FertilizerData">
-		select id,rateFlow,time
+		select *
 		from fertilizerData 
 		where fertilizer_id = #{fertilizerId}
-		and time between #{start} and #{end}
+		and time &gt;= #{start} and time &lt;= #{end}
 		order by time
 	</select>
 	

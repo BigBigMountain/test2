@@ -942,7 +942,8 @@ public class FertilizerController {
 	
 	@RequestMapping("/getIrrigationStatistics.do")
 	public String getIrrigationStatistics(HttpSession session,Model model, Integer fertilizerId,Integer valveNum,Date start,Date end){
-		List<Fertilizer> fertilizers = getFertilizers(session);
+        System.out.println("adsfasdfasfasdf=============a------asdf---asdfsadddf");
+	    List<Fertilizer> fertilizers = getFertilizers(session);
 		if(fertilizers == null){
 			model.addAttribute("msg","当前用户还未添加施肥机");
 			return "record/recordList";
@@ -950,7 +951,6 @@ public class FertilizerController {
 		if(fertilizerId == null || fertilizerId == 0){
 			fertilizerId = fertilizers.get(0).getFertilizerId();
 		}
-
 		List<ValveStatistics> irrigationStatistics = fertilizerService.getIrrigationStatistics(fertilizerId, valveNum, start, end);
 
 		model.addAttribute("fertilizerId",fertilizerId);
