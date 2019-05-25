@@ -2,6 +2,8 @@ package com.lyyh.fertilizer.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -867,7 +869,7 @@ public class FertilizerController {
 	}
 	
 	@RequestMapping("/appGetValveRecord.do")
-	public @ResponseBody ResultInfo appGetValveRecord(User user, Integer fertilizerId,Date start,Date end){
+	public @ResponseBody ResultInfo appGetValveRecord(User user, Integer fertilizerId,String start,String end){
 		List<ValveDataVo> valveRecords;
 		
 		List<Fertilizer> fertilizers = fertilizerService.queryAllByUsername(user.getUsername());
@@ -881,14 +883,24 @@ public class FertilizerController {
 			if(start == null || end == null){
 				valveRecords = fertilizerService.getValveRecord(fertilizerId);
 			}else{
-				valveRecords = fertilizerService.getValveRecord(fertilizerId,start,end);
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date s = null;
+				Date e = null;
+				try {
+					s = df.parse(start);
+					e = df.parse(end);
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+					return ResultInfo.error("时间格式错误");
+				}
+				valveRecords = fertilizerService.getValveRecord(fertilizerId,s,e);
 			}
 			return ResultInfo.success().put("valveRecords", valveRecords);
 		}
 	}
 	
 	@RequestMapping("/getValveRecord.do")
-	public String getValveRecord(HttpSession session, Model model, Integer fertilizerId,Date start,Date end){
+	public String getValveRecord(HttpSession session, Model model, Integer fertilizerId,String start,String end) throws ParseException{
 		List<ValveDataVo> valveRecords;
 		
 		User user =(User) session.getAttribute("loginUser");
@@ -903,7 +915,12 @@ public class FertilizerController {
 			if(start == null || end == null){
 				valveRecords = fertilizerService.getValveRecord(fertilizerId);
 			}else{
-				valveRecords = fertilizerService.getValveRecord(fertilizerId,start,end);
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				Date s = df.parse(start);
+				Date e = df.parse(end);
+				valveRecords = fertilizerService.getValveRecord(fertilizerId,s,e);
+				model.addAttribute("start",s);
+				model.addAttribute("end",e);
 			}
 			
 			model.addAttribute("valveRecords", valveRecords);
@@ -912,6 +929,7 @@ public class FertilizerController {
 		}
 		return "record/recordList";
 	}
+	
 	
 	@RequestMapping("/appGetPumpStatus.do")
 	public @ResponseBody Map<String, Object> appGetPumpStatus(User user,Integer fertilizerId){
@@ -941,8 +959,7 @@ public class FertilizerController {
 	}
 	
 	@RequestMapping("/getIrrigationStatistics.do")
-	public String getIrrigationStatistics(HttpSession session,Model model, Integer fertilizerId,Integer valveNum,Date start,Date end){
-        System.out.println("adsfasdfasfasdf=============a------asdf---asdfsadddf");
+	public String getIrrigationStatistics(HttpSession session,Model model, Integer fertilizerId,Integer valveNum,String start,String end){
 	    List<Fertilizer> fertilizers = getFertilizers(session);
 		if(fertilizers == null){
 			model.addAttribute("msg","当前用户还未添加施肥机");
@@ -951,7 +968,18 @@ public class FertilizerController {
 		if(fertilizerId == null || fertilizerId == 0){
 			fertilizerId = fertilizers.get(0).getFertilizerId();
 		}
-		List<ValveStatistics> irrigationStatistics = fertilizerService.getIrrigationStatistics(fertilizerId, valveNum, start, end);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date s = null;
+		Date e = null;
+			try {
+				s = df.parse(start);
+				e = df.parse(end);
+				model.addAttribute("start",s);
+				model.addAttribute("end",e);
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+		List<ValveStatistics> irrigationStatistics = fertilizerService.getIrrigationStatistics(fertilizerId, valveNum, s, e);
 
 		model.addAttribute("fertilizerId",fertilizerId);
 		model.addAttribute("fertilizers",fertilizers);

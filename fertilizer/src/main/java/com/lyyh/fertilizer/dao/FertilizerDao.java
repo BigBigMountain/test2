@@ -73,5 +73,8 @@ public interface FertilizerDao {
 
 	public List<Fertilizer> queryAllHaveDtuAndOnline();
 
+	//查询最新一条数据
+	public FertilizerData getNewestDataByUserName(@Param("username") String username);
+
 
 }

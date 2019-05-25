@@ -5,8 +5,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <link href="/css/datepicker/foundation-datepicker.css" rel="stylesheet" type="text/css">
     <script src="/js/datepicker/foundation-datepicker.js"></script>
-    <script src="/js/datepicker/foundation-datepicker.zh-CN.js"></script>
+
     <title>setting - FertilizerList</title>
     <style type="text/css">
         #bg {
@@ -48,6 +50,7 @@
 <body>
 <div class="box-positon">
     <div class="rpos">当前位置:
+    	<form action="/fertilizer/getValveRecord.do" method="post">
         <select id="fertilizerId" name="fertilizerId" onchange="changeFertilizer()" style="background-color:#FEFFD0 ">
             <c:forEach items="${fertilizers }" var="fertilizer">
                 <option value="${fertilizer.fertilizerId }" <c:if test="${fertilizerId == fertilizer.fertilizerId }">selected="selected"</c:if>>${fertilizer.fertilizerName }</option>
@@ -58,8 +61,10 @@
                 <option value="${item}" <c:if test="${valveNum == item}" >selected="selected"</c:if> >${item}号阀</option>
             </c:forEach>
         </select>
-        开始时间:<input type="text"  name="start" value="" id="start">
-        结束时间:<input type="text"  name="end" value="" id="end">
+       	开始时间:<input type="text" name="start" value="${start }" id="start">
+		结束时间:<input type="text" name="end" value="${end }" id="end">
+		<input type="submit" value="确定">
+    	</form>
     </div>
     <div class="clear"></div>
 </div>
@@ -119,7 +124,11 @@
 
 <script type="text/javascript">
     $('#start').fdatepicker({
-        format: 'yyyy-mm-dd hh:ii',
+        format: 'yyyy-mm-dd hh:ii:ss',
+        pickTime: true
+    });
+    $('#end').fdatepicker({
+        format: 'yyyy-mm-dd hh:ii:ss',
         pickTime: true
     });
     function changeFertilizer(){

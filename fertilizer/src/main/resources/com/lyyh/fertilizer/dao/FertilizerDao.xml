@@ -186,4 +186,13 @@
 			and isOnline = 1
 	</select>
 	
+	<select id="getNewestDataByUserName" resultMap= "FertilizerData">
+		select top 1 fd.*
+		from fertilizerData fd where fd.fertilizer_id in (
+		
+			select f.id from fertilizer f join users u on u.user_id = f.user_id where u.user_name = #{username}
+		
+		)
+		order by fd.id desc
+	</select>
 </mapper>
