@@ -55,7 +55,9 @@
 		update tGateway set is_del = 1 where id = #{gateWayId}
 	</delete>
 	
-	
+	<update id="updateGmacOfTvalve" >
+		update tvalve set gmac = #{newMacCode} where gmac = #{oldMacCode}
+	</update>
 	
 	
 	
@@ -127,6 +129,12 @@
 		update tvalve set is_del = 1 where id = #{id}
 	</delete>
 	
+	<select id="getTGateWayById" parameterType="Integer" resultMap="gateWay">
+		select * from tGateway where id = #{id} and is_del = 0
+	</select>
 	
+	<update id="updateGmacOfTtempAndHumEquip">
+		update tTempAndHumEquip set gmac = #{newMacCode} where gmac = #{oldMacCode}
+	</update>
 	
 </mapper>

@@ -58,8 +58,10 @@ $(function(){
 			</c:forEach>
 		</select>
 	</div>
-	<div style="float:right;">
-		<input type="button" value="添加阀" onclick="addtvalve()" style="line-height:25px"/>
+	<div style="float:right;margin:6 20">
+		<input type="button" value="一键保存" onclick="saveAll()" style="line-height:30px"/>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="button" value="添加阀" onclick="addtvalve()" style="line-height:30px"/>
 	</div>
 	<div class="clear"></div>
 </div>
@@ -76,6 +78,7 @@ $(function(){
 			</tr>
 		</thead>
 		<tbody id="tbody" class="pn-ltbody"  align="center">
+		
 		<c:forEach items="${valveList}" var="tvalve" >
 			<form action="/equipment/saveOrUpdateValve.do" method="post">
 				<tr bgcolor="#ffffff" onmouseover="this.bgColor='#eeeeee'" onmouseout="this.bgColor='#ffffff'">
@@ -113,6 +116,7 @@ $(function(){
 				</tr>
 			</form>
 		</c:forEach>
+		
 		</tbody>
 	</table>
 
@@ -223,7 +227,25 @@ function inputOut(i){
 	i.style.border="0px";
 	i.style.background="none"; 
 }
-
+/* function saveAll(){
+	$.ajax({
+		//几个参数需要注意一下
+		type: "POST",//方法类型
+		dataType: "json",//预期服务器返回的数据类型
+		url: "/equipment/saveOrUpdateValveList.do" ,//url
+		data: $('#allValves').serialize(),
+		success: function (result) {
+		    console.log(result);//打印服务端返回的数据(调试用)
+		    if (result.resultCode == 200) {
+		        alert("SUCCESS");
+		    }
+		    
+		},
+		error : function() {
+		    alert("异常！");
+		}
+	});
+} */
 </script>
 </body>
 </html>

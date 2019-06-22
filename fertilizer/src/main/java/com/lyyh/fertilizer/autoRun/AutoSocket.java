@@ -6,13 +6,14 @@ import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 import com.lyyh.fertilizer.dao.TEquipmentDao;
 import com.lyyh.greenhouse.util.tzgk.LoginToken;
 import com.lyyh.greenhouse.util.tzgk.TzgkConstant;
 import com.lyyh.greenhouse.util.tzgk.TzgkUtils;
 
-//@Component
+@Component
 public class AutoSocket implements ApplicationListener<ContextRefreshedEvent> {
 	
 	@Autowired
@@ -33,8 +34,7 @@ public class AutoSocket implements ApplicationListener<ContextRefreshedEvent> {
 //				System.out.println("WebSocketClient: "+client);
 				if(null != client){
 					client.connect();
-//					client.send("测试websocket");
-//					System.out.println("已发送测试");
+					System.out.println("已登录天正websocket服务");
 				}
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block

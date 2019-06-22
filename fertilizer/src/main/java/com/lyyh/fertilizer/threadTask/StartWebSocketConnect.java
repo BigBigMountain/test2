@@ -34,8 +34,7 @@ public class StartWebSocketConnect implements Runnable {
 //			System.out.println("WebSocketClient: "+client);
 			if(null != client){
 				client.connect();
-//				client.send("测试websocket");
-//				System.out.println("已发送测试");
+				System.out.println("已重新登录天正websocket服务");
 			}
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block

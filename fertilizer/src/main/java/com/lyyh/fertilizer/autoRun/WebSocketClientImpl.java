@@ -50,7 +50,6 @@ public class WebSocketClientImpl extends WebSocketClient {
 
 	@Override
 	public void onError(Exception e) {
-		// TODO Auto-generated method stub
 		System.out.println("异常"+e);
 		
 		

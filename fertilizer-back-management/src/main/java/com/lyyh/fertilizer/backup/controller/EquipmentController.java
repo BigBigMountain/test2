@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -15,8 +16,10 @@ import com.lyyh.fertilizer.backup.service.EquipmentService;
 import com.lyyh.fertilizer.backup.service.FertilizerService;
 import com.lyyh.fertilizer.pojo.Fertilizer;
 import com.lyyh.greenhouse.pojo.User;
+import com.lyyh.greenhouse.util.ResultInfo;
 import com.lyyh.tzgk.pojo.TgateWay;
 import com.lyyh.tzgk.pojo.Tvalve;
+import com.lyyh.tzgk.pojo.vo.TvalveList;
 
 @Controller
 @RequestMapping("/equipment")
@@ -130,6 +133,13 @@ public class EquipmentController extends BaseController {
 		}
 		return "参数不对!";
 		
+	}
+	
+	@RequestMapping("saveOrUpdateValveList.do")
+	public @ResponseBody ResultInfo saveOrUpdateValveList(TvalveList valveList){ 
+		
+		System.out.println(valveList.toString());
+		return ResultInfo.success();
 	}
 	
 }

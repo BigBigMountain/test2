@@ -19,15 +19,19 @@ public class User implements Serializable {
 	
 	private Integer zoneId;
 
-	private Integer type;
+	private Integer controllType;
 	
 	
-	public Integer getType() {
-		return type;
+	
+
+	
+
+	public Integer getControllType() {
+		return controllType;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setControllType(Integer controllType) {
+		this.controllType = controllType;
 	}
 
 	public Integer getUserId() {

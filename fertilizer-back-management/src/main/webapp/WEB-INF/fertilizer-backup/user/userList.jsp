@@ -119,7 +119,7 @@ $(function(){
 				<td><input type="text" class="input-text" name="realname" style="height: 30px"/></td>
 			</tr>
 			<tr>
-				<td style="text-align: right;">姓名 ：</td>
+				<td style="text-align: right;">单位 ：</td>
 				<td><input type="text" class="input-text" name="company" style="height: 30px"/></td>
 			</tr>
 			<tr>

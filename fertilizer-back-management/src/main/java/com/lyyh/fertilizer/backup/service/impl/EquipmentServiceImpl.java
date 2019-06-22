@@ -31,6 +31,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 	@Override
 	@Transactional
 	public void updateGateWay(TgateWay gateWay) {
+		//首先获取原来的网关数据,再修改阀的mac和温湿度的mac
+		TgateWay oldGateWay = equipmentDao.getTGateWayById(gateWay.getGateWayId());
+		equipmentDao.updateGmacOfTvalve(oldGateWay.getMacCode(), gateWay.getMacCode());
+		equipmentDao.updateGmacOfTtempAndHumEquip(oldGateWay.getMacCode(), gateWay.getMacCode());
 		equipmentDao.updateGateWay(gateWay);
 	}
 

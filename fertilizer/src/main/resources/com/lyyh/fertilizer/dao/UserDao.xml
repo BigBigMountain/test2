@@ -9,7 +9,7 @@
     <result column="company" 	property="company" />
     <result column="zone_name" 	property="zoneName" />
     <result column="zone_id" 	property="zoneId" />
-    <result column="type" 	property="type" />
+    <result column="type" 	property="controllType" />
   </resultMap>
   <select id="findByUsername" parameterType="string" resultMap="User">
   <!-- 	select u.*,z.zone_name
